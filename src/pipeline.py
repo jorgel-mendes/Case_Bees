@@ -8,7 +8,7 @@ from src.aggregate import aggregate_to_gold
 dag = DAG(
     'breweries_pipeline',
     start_date=datetime(2023, 1, 1),
-    schedule_interval=None,
+    schedule_interval='0 6 * * *',
     catchup=False,
 )
 
@@ -17,10 +17,10 @@ def fetch_bronze():
     save_raw_data(data, 'data/bronze/breweries_raw.json')
 
 def transform_silver():
-    transform_to_silver('data/bronze/breweries_raw.json', 'data/silver/breweries_silver.parquet')
+    transform_to_silver('data/bronze/breweries_raw.json', 'data/silver/')
 
 def aggregate_gold():
-    aggregate_to_gold('data/silver/breweries_silver.parquet', 'data/gold/breweries_agg.parquet')
+    aggregate_to_gold('data/silver/', 'data/gold/breweries_agg.parquet')
 
 fetch_task = PythonOperator(
     task_id='fetch_bronze',

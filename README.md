@@ -5,8 +5,8 @@ This project implements a data pipeline to fetch, transform, and aggregate brewe
 ## Architecture
 
 - **Bronze Layer**: Raw data fetched from API, stored as JSON.
-- **Silver Layer**: Cleaned data, deduplicated, nulls handled, stored as Parquet partitioned by state.
-- **Gold Layer**: Aggregated counts of breweries by type and state, stored as Parquet.
+- **Silver Layer**: Cleaned data, deduplicated, nulls handled, stored as Parquet partitioned by country.
+- **Gold Layer**: Aggregated counts of breweries by type and country, stored as Parquet.
 
 ## Technologies
 
@@ -18,8 +18,8 @@ This project implements a data pipeline to fetch, transform, and aggregate brewe
 ## Design Choices
 
 - Used PySpark for scalable data processing, replacing Pandas for larger datasets.
-- Partitioned silver by state for efficient location-based queries.
-- Kept transformations minimal: dedup by id, fill null states with 'unknown'.
+- Partitioned silver by country for location-based queries.
+- Kept transformations minimal: dedup by id, fill null countries with 'unknown'.
 - Simple sequential execution in run.py for ease of understanding.
 
 ## Trade-offs
@@ -30,14 +30,16 @@ This project implements a data pipeline to fetch, transform, and aggregate brewe
 
 ## How to Run
 
-### With Docker
+### With Docker (Python)
+
+To run the pipeline directly with Python:
 
 ```bash
 docker build -t bees-case .
-docker run bees-case
+docker run --rm -v %cd%/data:/app/data bees-case python run.py
 ```
 
-The pipeline runs automatically and completes.
+This will execute the pipeline sequentially: fetch, transform, aggregate.
 
 ### Locally
 

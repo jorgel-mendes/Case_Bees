@@ -10,4 +10,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "run.py"]
+ENV AIRFLOW__CORE__DAGS_FOLDER=/app/src
+ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
+ENV PYTHONPATH=/app
+
+RUN chmod +x entrypoint.sh
+
+CMD ["./entrypoint.sh"]
