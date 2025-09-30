@@ -5,8 +5,8 @@ This project implements a data pipeline to fetch, transform, and aggregate brewe
 ## Architecture
 
 - **Bronze Layer**: Raw data fetched from API, stored as JSON.
-- **Silver Layer**: Cleaned data, deduplicated, nulls handled, stored as Parquet partitioned by state.
-- **Gold Layer**: Aggregated counts of breweries by type and state, stored as Parquet.
+- **Silver Layer**: Cleaned data, deduplicated, nulls handled, stored as Parquet partitioned by country.
+- **Gold Layer**: Aggregated counts of breweries by type and country, stored as Parquet. I also created an excel file as an example of deliverable for a final user.
 
 ## Technologies
 
@@ -20,9 +20,10 @@ This project implements a data pipeline to fetch, transform, and aggregate brewe
 ## Design Choices
 
 - Used Airflow for orchestration with DAG and PythonOperators.
-- Partitioned silver by state for location-based queries.
-- Kept transformations minimal: dedup by id, fill null states with 'unknown'.
+- Partitioned silver by country for location-based queries.
+- Kept transformations minimal: dedup by id, fill null countries with 'unknown'.
 - No schema enforcement beyond basic cleaning, as data is simple.
+    - If it were more complicated or critical to other process I would enforce a schema or raise error on changes.
 
 ## Trade-offs
 
@@ -32,7 +33,7 @@ This project implements a data pipeline to fetch, transform, and aggregate brewe
 
 ## How to Run
 
-### With Docker
+### With Docker (Airflow)
 
 ```bash
 docker build -t bees-case .
@@ -40,6 +41,19 @@ docker run -p 8080:8080 bees-case
 ```
 
 Then, open http://localhost:8080, login with admin/admin, and trigger the 'breweries_pipeline' DAG.
+
+### With Docker (Python)
+
+To run the pipeline directly with Python without Airflow:
+
+```bash
+docker build -t bees-case .
+docker run --rm bees-case python run.py
+```
+
+This will execute the pipeline sequentially: fetch, transform, aggregate.
+
+For docker use -v your_directory:/app/data to get the data in your current folder.
 
 ### Locally
 
