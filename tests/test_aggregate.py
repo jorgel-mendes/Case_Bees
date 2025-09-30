@@ -6,7 +6,7 @@ def test_aggregate(tmp_path):
     # Mock silver data
     data = pd.DataFrame({
         'brewery_type': ['micro', 'brewpub', 'micro'],
-        'state': ['CA', 'NY', 'CA']
+        'country': ['US', 'US', 'US']
     })
     input_dir = tmp_path / 'silver'
     input_dir.mkdir()
@@ -18,7 +18,7 @@ def test_aggregate(tmp_path):
     result = pd.read_parquet(output_path)
     expected = pd.DataFrame({
         'brewery_type': ['brewpub', 'micro'],
-        'state': ['NY', 'CA'],
+        'country': ['US', 'US'],
         'count': [1, 2]
     })
-    pd.testing.assert_frame_equal(result.sort_values(['brewery_type', 'state']).reset_index(drop=True), expected)
+    pd.testing.assert_frame_equal(result.sort_values(['brewery_type', 'country']).reset_index(drop=True), expected)

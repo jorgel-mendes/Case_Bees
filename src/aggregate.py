@@ -10,9 +10,11 @@ def aggregate_to_gold(input_path, output_path):
 
     logging.info(f"Loaded {len(data)} records from silver")
     # Aggregate
-    agg = data.groupby(['brewery_type', 'state']).size().reset_index(name='count')
+    agg = data.groupby(['brewery_type', 'country']).size().reset_index(name='count')
 
     logging.info(f"Aggregated to {len(agg)} groups")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     agg.to_parquet(output_path, index=False)
-    logging.info(f"Saved gold data to {output_path}")
+    excel_path = output_path.replace('.parquet', '.xlsx')
+    agg.to_excel(excel_path, index=False)
+    logging.info(f"Saved gold data to {output_path} and {excel_path}")

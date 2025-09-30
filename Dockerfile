@@ -10,5 +10,8 @@ COPY . .
 
 ENV AIRFLOW__CORE__DAGS_FOLDER=/app/src
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
+ENV PYTHONPATH=/app
 
-CMD ["airflow", "standalone"]
+RUN chmod +x entrypoint.sh
+
+CMD ["./entrypoint.sh"]
