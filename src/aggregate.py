@@ -1,18 +1,17 @@
-import pandas as pd
 import os
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def aggregate_to_gold(input_path, output_path):
+def aggregate_to_gold(spark, input_path, output_path):
     logging.info("Starting gold aggregation")
-    data = pd.read_parquet(input_path)
+    df = spark.read.parquet(input_path)
 
-    logging.info(f"Loaded {len(data)} records from silver")
+    logging.info(f"Loaded {df.count()} records from silver")
     # Aggregate
-    agg = data.groupby(['brewery_type', 'state']).size().reset_index(name='count')
+    agg_df = df.groupBy("brewery_type", "state").count()
 
-    logging.info(f"Aggregated to {len(agg)} groups")
+    logging.info(f"Aggregated to {agg_df.count()} groups")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    agg.to_parquet(output_path, index=False)
+    agg_df.write.mode("overwrite").parquet(output_path)
     logging.info(f"Saved gold data to {output_path}")

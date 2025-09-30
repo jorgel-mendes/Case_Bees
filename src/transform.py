@@ -1,22 +1,19 @@
-import pandas as pd
 import os
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def transform_to_silver(input_path, output_path):
+def transform_to_silver(spark, input_path, output_path):
     logging.info("Starting silver transformation")
-    with open(input_path, 'r') as f:
-        data = pd.read_json(f)
+    df = spark.read.option("multiline", "true").json(input_path)
 
-    logging.info(f"Loaded {len(data)} raw records")
+    logging.info(f"Loaded {df.count()} raw records")
     # Clean data
-    data = data.drop_duplicates(subset=['id'])
-    data['state'] = data['state'].fillna('unknown')
-    data['country'] = data['country'].fillna('unknown')
+    df = df.dropDuplicates(['id'])
+    df = df.fillna({'state': 'unknown', 'country': 'unknown'})
 
-    logging.info(f"After cleaning: {len(data)} records")
-    # Save as single Parquet file
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    data.to_parquet(output_path, index=False)
+    logging.info(f"After cleaning: {df.count()} records")
+    # Save partitioned by state
+    os.makedirs(output_path, exist_ok=True)
+    df.write.mode("overwrite").partitionBy("state").parquet(output_path)
     logging.info(f"Saved silver data to {output_path}")
