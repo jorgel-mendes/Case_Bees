@@ -10,7 +10,7 @@ def aggregate_to_gold(input_path, output_path):
 
     logging.info(f"Loaded {len(data)} records from silver")
     # Aggregate
-    agg = data.groupby(['brewery_type', 'country']).size().reset_index(name='count')
+    agg = data.groupby(['brewery_type', 'country'], observed=False).size().reset_index(name='count')
 
     logging.info(f"Aggregated to {len(agg)} groups")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

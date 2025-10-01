@@ -20,6 +20,7 @@ This project implements a data pipeline to fetch, transform, and aggregate brewe
 ## Design Choices
 
 - Used Airflow for orchestration with DAG and PythonOperators.
+- Retry up to 3 times in case of failure in the api request.
 - Partitioned silver by country for location-based queries.
 - Kept transformations minimal: dedup by id, fill null countries with 'unknown'.
 - No schema enforcement beyond basic cleaning, as data is simple.
